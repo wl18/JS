@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>绘制圆弧</title>
+	</head>
+	<body>
+		<canvas id="canvas" width="600" height="600"></canvas>
+		<script>
+			var canv=document.getElementById("canvas");
+			var ctx=canv.getContext("2d");
+		  	ctx.beginPath();
+		  	ctx.arc(150,50,30,0,Math.PI,true);//前两个参数为圆心，第三个为半径，第四个是圆弧的起始位置（0是三点钟方向）
+		  	ctx.stroke();
+		  	ctx.beginPath();
+		  	ctx.arc(50,50,30,0,Math.PI,false);//第五个是圆弧的截止角度（PI是180度，PI*2是360度） false为顺时针，true为逆时针
+		  	ctx.stroke();
+		</script>
+	</body>
+</html>

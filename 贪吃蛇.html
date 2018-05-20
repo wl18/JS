@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+	<head>	
+		<meta charset="utf-8">
+		<title>贪吃蛇</title>
+	</head>
+	<body>
+		<canvas id="canvas" width="400" height="400"></canvas>
+		<script src="jquery-1.4.1.js"></script>
+		<script>
+			var canv=document.getElementById("canvas");
+			var ctx=canv.getContext("2d");
+			var score=0;
+			
+			//构造函数
+			var Block=function(col,row,size){
+				this.col=col;
+				this.row=row;
+				this.size=size;
+			};
+			//构造函数draw原型
+			Block.prototype.draw=function(){
+				ctx.fillRect(this.col*this.size,this.row*this.size,this.size,this.size);
+			};
+			//创建snake对象
+			var snake={
+				body:[
+					new Block(20,20,10),
+					new Block(20,21,10),
+					new Block(20,22,10)
+				],
+				direction:"right",  //开始时运动的方向
+			};
+			//画出snake,并引用了构造函数原型
+			snake.draw=function(){
+				for(var i=0;i<this.body.length;i++){
+					this.body[i].draw();
+				}
+			};
+			
+			//snake的移动，吃到球则变长，否则不变
+			snake.move=function(){
+			
+				var head=this.body[0];//创建一个变量head，用来保存蛇头的对象
+				
+				//根据snake运动的方向创建新的对象newhead
+				if(snake.direction=="right"){
+					var newhead=new Block(head.col+1,head.row,head.size);
+				}
+				if(snake.direction=="left"){
+					var newhead=new Block(head.col-1,head.row,head.size);
+				}
+				if(snake.direction=="up"){
+					var newhead=new Block(head.col,head.row-1,head.size);
+				}
+				if(snake.direction=="down"){
+					var newhead=new Block(head.col,head.row+1,head.size);
+				}
+				
+				//边缘碰撞检测
+				if(newhead.col<0 || newhead.col>39){
+					clearInterval(intervalId);
+					gameOver();
+				}
+				if(newhead.row<0 || newhead.row>39){
+					clearInterval(intervalId);
+					gameOver();
+				}
+				//碰到自己身体
+				for(var i=0;i<this.body.length;i++){
+					if(this.body[i].col==newhead.col && this.body[i].row==newhead.row){
+						clearInterval(intervalId);
+						gameOver();
+					}
+				}
+				
+				this.body.unshift(newhead);//通过unshift方法将对象newhead添加到数组中
+				
+				//判断吃到苹果
+				if(newhead.col==apple.posX && newhead.row==apple.posY){
+					while(true){
+						score=score+100;
+						var checkApple=false;
+						apple.posX=Math.floor(Math.random()*40);
+						apple.posY=Math.floor(Math.random()*40);
+						for(var i=0;i<this.body.length;i++){
+							if(this.body[i].col==apple.posX && this.body[i].row==apple.posY)
+								checkApple=ture;
+						}
+						if(!checkApple)
+							break;
+					}
+				}else{
+					this.body.pop();//通过pop方法将数组中最后一个对象删除
+				}
+			};
+			
+			//创建苹果对象
+			var apple={
+				posX:Math.floor(Math.random()*40), //floor保证产生的位置值是个整数，random()*40是产生一个0～40的随机数
+				posY:Math.floor(Math.random()*40),
+				sizeR:5
+			};
+			apple.draw=function(){
+				ctx.fillStyle="Red";//将填充颜色变为红色
+				ctx.beginPath();
+				ctx.arc((this.posX*2+1)*this.sizeR,(this.posY*2+1)*this.sizeR,this.sizeR,0,Math.PI*2,false);
+				ctx.fill();
+				ctx.fillStyle="Black";//将填充颜色变回黑色
+			};
+			
+			//游戏结束
+			var gameOver=function(){
+				ctx.font="60px Comic Sans MS";
+				ctx.fillStyle="orange";
+				ctx.textAlign="center";
+				ctx.textBaseline="middle";
+				ctx.fillText("GAME OVER",200,200);
+				ctx.fillStyle="black";
+			};
+			
+			//贪吃蛇的控制，蛇头每次只有两个方向可走
+			$("body").keydown(function(event){
+				if(event.keyCode==37 && snake.direction!="right"){
+					snake.direction="left";
+				}
+				if(event.keyCode==38 && snake.direction!="down"){
+					snake.direction="up";
+				}
+				if(event.keyCode==39 && snake.direction!="left"){
+					snake.direction="right";
+				}
+				if(event.keyCode==40 && snake.direction!="up"){
+					snake.direction="down";
+				}
+			});
+			
+			//想让snake运动起来，所以添加定时功能
+			var intervalId = setInterval(function(){
+				ctx.clearRect(0,0,400,400);
+				ctx.textBaseline="top";
+				ctx.font="20px Arial";
+				ctx.textAlign="left";
+				ctx.fillText("Score:"+score,5,5);
+				snake.draw();
+				snake.move();
+				apple.draw();
+				ctx.strokeRect(0,0,400,400);
+			},200); //0.2秒变化一次
+		
+		</script>
+	</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

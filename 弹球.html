@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>弹球</title>
+	</head>
+	<body>
+		<canvas id="canvas" width="400" height="400"></canvas>
+		<script src="jquery-1.4.1.js"></script>
+		<script>
+			var canv=document.getElementById("canvas");
+			var ctx=canv.getContext("2d");
+			var ball={
+				x:100,
+				y:100,
+				xSpeed:-2,
+				ySpeed:-2
+			};
+			var panel={
+				x:200,
+				y:390,
+				xSize:50,
+				ySize:5
+			};
+			//绘制挡板
+			panel.draw=function(){
+				ctx.fillRect(this.x,this.y,this.xSize,this.ySize);
+			};
+			//绘制小球
+			ball.draw=function(){
+				ctx.beginPath();
+				ctx.arc(this.x,this.y,10,0,Math.PI*2,false);
+				ctx.fill();
+			};
+			//小球运动的方法
+			ball.move=function(){
+				this.x=this.x+this.xSpeed;
+				this.y=this.y+this.ySpeed;
+			};
+			//边缘检测
+			ball.checkCanvas=function(panelStart,panelEnd){
+				if(this.x<this.r||this.x>400-this.r)
+					this.xSpeed=-this.xSpeed;
+				if(this.y<this.r)
+					this.ySpeed=-this.ySpeed;
+				if(this.y>390-this.r){
+					if(this.x>panelStart && this.x<panelEnd)
+						this.ySpeed=-this.ySpeed;
+					else{
+						alert("Game over!!");
+						this.x=50;
+						this.y=100;
+					}
+				}
+			};
+			//定时功能
+			setInterval(function(){					//这个函数两个参数，第一个大括号中的，第二个是定时的时间（每30ms执行一次大括号中的内容）
+				ctx.clearRect(0,0,400,400);
+				ball.draw();
+				panel.draw();						
+				ball.move();
+				ball.checkCanvas(panel.x,panel.x+panel.xSize);
+				ctx.strokeRect(0,0,400,400);	
+			},30);
+			//键盘交互
+			$("body").keydown(function(event){
+				console.log(event.keyCode);
+				if(event.keyCode==37){
+					panel.x=panel.x-5;
+					if(panel.x<0)
+						panel.x=0;
+				}
+				if(event.keyCode==39){
+					panel.x=panel.x+5;
+					if(panel.x>400-panel.xSize)
+						panel.x=400-panel.xSize;
+				}
+			});
+		</script>
+	</body>
+</html>
+
+
+
+
+
+
+
+
+
+
